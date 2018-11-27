@@ -28,18 +28,24 @@ class PeopleController extends AbstractController
     public function validateName(Request $request, $element)
     {
         try {
-            $team = json_decode($request->getContent(), true)['team'];
-            $name = json_decode($request->getContent(), true)['name'];
+            switch ($element) {
+                case 'name':
+                    $name = json_decode($request->getContent(), true)['name'];
+                    break;
+                case 'team':
+                    $team = json_decode($request->getContent(), true)['team'];
+                    break;
+            }
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Invalid method'], Response::HTTP_BAD_REQUEST);
         }
 
-        $teams = $this->getTeams();
-        $students = $this->getStudents();
         switch ($element) {
             case 'name':
+                $students = $this->getStudents();
                 return new JsonResponse(['valid' => in_array(strtolower($name), $students)]);
             case 'team':
+                $teams = $this->getTeams();
                 return new JsonResponse(['valid' => in_array(strtolower($team), $teams)]);
         }
 
